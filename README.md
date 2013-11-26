@@ -1,6 +1,6 @@
 # ClearCookieAndReload
 
-Google chrome extension to clear cookie for current tab and reload
+[Google chrome extension](https://chrome.google.com/webstore/detail/clear-cookie-and-reload/clinijjpaohndgmfepgpifcfnmlecbom) to clear cookie for current tab and reload
 
 ## Example Usage
 
