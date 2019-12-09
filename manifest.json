@@ -2,10 +2,9 @@
     "manifest_version": 2,
     "name": "Clear Cookie and Reload",
     "description": "Clear Cookie for current tab and reload",
-    "version": "0.3",
+    "version": "0.4",
     "permissions": [
         "cookies",
-        "tabs",
         "http://*/*",
         "https://*/*"
     ],
