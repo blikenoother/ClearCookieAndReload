@@ -1,12 +1,23 @@
-// triggered when user clicks on installed extention icon
-chrome.browserAction.onClicked.addListener(function (tab) {
-
+// Inspired from https://github.com/blikenoother/ClearCookieAndReload
+let remove = tab => {
     let url = tab.url;
+    let each = cookies => {
+        for (let i = 0; i < cookies.length; i++) {
+            let url = "http" + (cookies[i].secure ? "s" : "") + "://" + cookies[i].domain + cookies[i].path;
+            let cname = cookies[i].name;
 
+            // delete cookie
+            chrome.cookies.remove({
+                url: url,
+                name: cname
+            });
+        }
+    };
+        
     // clear all cookies for the current url
-    chrome.cookies.getAll({ url: url }, function (cookies) {
+    chrome.cookies.getAll({ url: url }, cookies => {
         console.log("Clearing cookies for active urL", url, cookies);
-        clearCookies(cookies);
+        each(cookies);
     });
 
     // retrive domain from active tab
@@ -15,22 +26,30 @@ chrome.browserAction.onClicked.addListener(function (tab) {
     domain = "." + domain;
 
     // get all cookies for domain
-    chrome.cookies.getAll({ domain: domain }, function (cookies) {
+    chrome.cookies.getAll({ domain: domain }, cookies => {
         console.log("Clearing cookies for domain", domain, cookies);
-        clearCookies(cookies);
+        each(cookies);
     });
+};
+
+let contextMenu = () => {
+    chrome.contextMenus.create({
+        "id": "ClearCookieAndReload",
+        "title": "Clear Cookie and Reload",
+        "documentUrlPatterns": [
+            "http://*/*",
+            "https://*/*"
+        ]
+    });
+};
+
+chrome.browserAction.onClicked.addListener(tab => {
+    remove(tab);
 });
 
-function clearCookies(cookies) {
-    // iterate on cookie to get cookie detail
-    for (let i = 0; i < cookies.length; i++) {
-        let url = "http" + (cookies[i].secure ? "s" : "") + "://" + cookies[i].domain + cookies[i].path;
-        let cname = cookies[i].name;
+chrome.contextMenus.onClicked.addListener(((info, tab) => {
+    remove(tab);
+}));
 
-        // delete cookie
-        chrome.cookies.remove({
-            url: url,
-            name: cname
-        });
-    }
-}
+chrome.runtime.onStartup.addListener(contextMenu);
+chrome.runtime.onInstalled.addListener(contextMenu);
